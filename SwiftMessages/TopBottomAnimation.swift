@@ -8,7 +8,7 @@
 
 import UIKit
 
-public class TopBottomAnimation: NSObject, Animator {
+open class TopBottomAnimation: NSObject, Animator {
 
     public enum Style {
         case top
@@ -73,9 +73,9 @@ public class TopBottomAnimation: NSObject, Animator {
         })
     }
 
-    public var showDuration: TimeInterval? { return 0.4  }
+    open var showDuration: TimeInterval? { return 0.4  }
 
-    public var hideDuration: TimeInterval? { return 0.2  }
+    open var hideDuration: TimeInterval? { return 0.2  }
 
     func install(context: AnimationContext) {
         let view = context.messageView
