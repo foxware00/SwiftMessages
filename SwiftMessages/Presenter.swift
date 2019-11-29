@@ -17,7 +17,7 @@ class Presenter: NSObject {
     enum PresentationContext {
         case viewController(_: Weak<UIViewController>)
         case view(_: Weak<UIView>)
-        
+
         func viewControllerValue() -> UIViewController? {
             switch self {
             case .viewController(let weak):
@@ -26,7 +26,7 @@ class Presenter: NSObject {
                 return nil
             }
         }
-        
+
         func viewValue() -> UIView? {
             switch self {
             case .viewController(let weak):
@@ -36,7 +36,7 @@ class Presenter: NSObject {
             }
         }
     }
-    
+
     var config: SwiftMessages.Config
     let view: UIView
     weak var delegate: PresenterDelegate?
@@ -74,7 +74,7 @@ class Presenter: NSObject {
     }
 
     var id: String
-    
+
     var pauseDuration: TimeInterval? {
         let duration: TimeInterval?
         switch self.config.duration {
@@ -111,11 +111,11 @@ class Presenter: NSObject {
      MARK: - Showing and hiding
      */
 
-    func show(completion: @escaping AnimationCompletion) throws {
+    func show(animated: Bool = true, completion: @escaping AnimationCompletion) throws {
         try presentationContext = getPresentationContext()
         install()
         self.config.eventListeners.forEach { $0(.willShow) }
-        showAnimation() { completed in
+        showAnimation(animated: animated) { completed in
             completion(completed)
             if completed {
                 if self.config.dimMode.modal {
@@ -128,7 +128,7 @@ class Presenter: NSObject {
         }
     }
 
-    private func showAnimation(completion: @escaping AnimationCompletion) {
+    private func showAnimation(animated: Bool = true, completion: @escaping AnimationCompletion) {
 
         func dim(_ color: UIColor) {
             self.maskingView.backgroundColor = UIColor.clear
@@ -145,8 +145,11 @@ class Presenter: NSObject {
                 blurView.effect = UIBlurEffect(style: style)
             }
         }
-
         let context = animationContext()
+        guard animated else {
+            completion(true)
+            return
+        }
         animator.show(context: context) { (completed) in
             completion(completed)
         }
@@ -164,13 +167,13 @@ class Presenter: NSObject {
 
     private func showAccessibilityAnnouncement() {
         guard let accessibleMessage = view as? AccessibleMessage,
-            let message = accessibleMessage.accessibilityMessage else { return }
+              let message = accessibleMessage.accessibilityMessage else { return }
         UIAccessibility.post(notification: UIAccessibility.Notification.announcement, argument: message)
     }
 
     private func showAccessibilityFocus() {
         guard let accessibleMessage = view as? AccessibleMessage,
-            let focus = accessibleMessage.accessibilityElement ?? accessibleMessage.additonalAccessibilityElements?.first else { return }
+              let focus = accessibleMessage.accessibilityElement ?? accessibleMessage.additonalAccessibilityElements?.first else { return }
         UIAccessibility.post(notification: UIAccessibility.Notification.layoutChanged, argument: focus)
     }
 
@@ -204,11 +207,11 @@ class Presenter: NSObject {
 
         func unblur() {
             guard let view = maskingView.backgroundView as? UIVisualEffectView else { return }
-            UIView.animate(withDuration: 0.2, delay: 0, options: .beginFromCurrentState, animations: { 
+            UIView.animate(withDuration: 0.2, delay: 0, options: .beginFromCurrentState, animations: {
                 view.effect = nil
             }, completion: nil)
         }
-        
+
         switch config.dimMode {
         case .none:
             break
@@ -386,7 +389,7 @@ class Presenter: NSObject {
                     elements += additional
                 }
             } else {
-                    elements += [view]
+                elements += [view]
             }
             if config.dimMode.interactive {
                 let dismissView = UIView(frame: maskingView.bounds)
