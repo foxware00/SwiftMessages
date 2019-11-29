@@ -848,20 +848,20 @@ extension SwiftMessages {
         return globalInstance
     }
 
-    public static func show(viewProvider: @escaping ViewProvider) {
-        globalInstance.show(viewProvider: viewProvider)
+    public static func show(animated: Bool = true, viewProvider: @escaping ViewProvider) {
+        globalInstance.show(animated: animated, viewProvider: viewProvider)
     }
 
-    public static func show(config: Config, viewProvider: @escaping ViewProvider) {
-        globalInstance.show(config: config, viewProvider: viewProvider)
+    public static func show(animated: Bool = true, config: Config, viewProvider: @escaping ViewProvider) {
+        globalInstance.show(animated: animated, config: config, viewProvider: viewProvider)
     }
 
-    public static func show(view: UIView) {
-        globalInstance.show(view: view)
+    public static func show(animated: Bool = true, view: UIView) {
+        globalInstance.show(animated: animated, view: view)
     }
 
-    public static func show(config: Config, view: UIView) {
-        globalInstance.show(config: config, view: view)
+    public static func show(animated: Bool = true, config: Config, view: UIView) {
+        globalInstance.show(animated: animated, config: config, view: view)
     }
 
     public static func hide(animated: Bool = true) {
